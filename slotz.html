@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Slotz: online tickets for campus shows in Nigeria</title>
+<meta name="description" content="Slotz is an online ticketing platform for campus shows and events in Nigeria. Buyers pay securely and get a QR ticket that is scanned at the gate.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎟️</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&display=swap">
+<style>
+:root{--bg:#F6F4FF;--card:#fff;--text:#14122B;--muted:#5d5a78;--brand:#6C3CF0;--cta:#C6F432;--ink:#14122B;--hot:#FF5C6C;--line:#dcd7f5;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#14122B;--card:#1f1c3d;--text:#F6F4FF;--muted:#a9a5cc;--line:#352f66;color-scheme:dark}}
+*{box-sizing:border-box}
+html{scroll-padding-top:70px;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;background:var(--bg);border-bottom:2px solid var(--line);z-index:5}
+header .wrap{display:flex;justify-content:space-between;align-items:center;height:60px}
+.logo{font-weight:800;font-size:26px;letter-spacing:-.03em;color:var(--brand);text-decoration:none}.logo b{color:var(--hot)}
+nav a{color:var(--text);text-decoration:none;font-weight:700;margin-left:18px;font-size:15px}
+a:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+.hero{display:grid;gap:32px;padding:44px 0 36px;align-items:center}
+@media(min-width:760px){.hero{grid-template-columns:1.2fr .8fr}}
+h1{font-size:clamp(36px,7vw,58px);line-height:1.02;letter-spacing:-.035em;font-weight:800;margin:0 0 16px}
+.lead{font-size:19px;color:var(--muted);margin:0 0 24px;max-width:34em}
+.btn{display:inline-block;background:var(--cta);color:var(--ink);font-weight:800;font-size:17px;text-decoration:none;padding:15px 24px;border-radius:14px}
+.ticket{background:var(--brand);color:#fff;border-radius:26px;overflow:hidden;max-width:340px;justify-self:center;width:100%}
+.ticket .t1{padding:22px}.ticket .t1 strong{display:block;font-size:26px;letter-spacing:-.02em}
+.ticket .t2{background:var(--card);color:var(--text);padding:22px;display:grid;place-items:center;border-top:3px dashed var(--line)}
+.qr{width:150px;height:150px;border-radius:10px;background:repeating-conic-gradient(#14122B 0 25%,#fff 0 50%) 0 0/30px 30px;border:10px solid #fff;outline:2px solid var(--line)}
+.t2 small{margin-top:10px;font-weight:700;color:var(--muted)}
+section{padding:34px 0}
+h2{font-size:30px;letter-spacing:-.025em;margin:0 0 18px}
+.steps,.grid{display:grid;gap:14px;margin:0;padding:0;list-style:none}
+@media(min-width:700px){.steps{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:repeat(2,1fr)}}
+.steps li,.grid li{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:18px 20px}
+.steps li{counter-increment:s}.steps li::before{content:counter(s);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--cta);color:var(--ink);font-weight:800;margin-bottom:10px}
+.steps{counter-reset:s}
+h3{margin:0 0 6px;font-size:19px}p{margin:0 0 12px}.muted{color:var(--muted)}
+.band{background:var(--brand);color:#fff}.band .muted{color:#e6defc}
+.band a{color:#fff;font-weight:700}
+.doc{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:20px 22px}
+.doc h3{margin-top:16px}.doc h3:first-child{margin-top:0}
+footer{padding:28px 0 40px;border-top:2px solid var(--line);color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="logo" href="#top">Slotz<b>.</b></a>
+<nav><a href="#how">How it works</a><a href="#organizers">Organizers</a><a href="#contact">Contact</a></nav></div></header>
+
+<main id="top">
+<div class="wrap hero">
+  <div>
+    <h1>Tickets for campus shows, checked at the gate.</h1>
+    <p class="lead">Slotz lets organizers of campus shows and events in Nigeria sell tickets online. Buyers pay securely and get a QR ticket on their phone. No fake transfer screenshots, no long queues.</p>
+    <a class="btn" href="#contact">List your event</a>
+  </div>
+  <div class="ticket" aria-hidden="true">
+    <div class="t1"><strong>Your ticket</strong>Admits 1 · Paid</div>
+    <div class="t2"><div class="qr"></div><small>Scan at the gate</small></div>
+  </div>
+</div>
+
+<section id="how"><div class="wrap">
+  <h2>How it works for buyers</h2>
+  <ol class="steps">
+    <li><h3>Pick a ticket</h3><p class="muted">Choose the ticket type and how many you need on the event page.</p></li>
+    <li><h3>Pay online</h3><p class="muted">Pay by card, bank transfer, or USSD through Paystack, a licensed payment provider.</p></li>
+    <li><h3>Show your QR</h3><p class="muted">Save the QR ticket on your phone and show it at the gate to get in.</p></li>
+  </ol>
+</div></section>
+
+<section id="organizers" class="band"><div class="wrap">
+  <h2>For organizers</h2>
+  <p class="muted" style="max-width:36em">Student groups, departments, promoters, and clubs use Slotz to sell tickets without chasing payment proof in DMs.</p>
+  <ul class="grid" style="color:var(--text)">
+    <li><h3>Sell online</h3><p class="muted">Share one link on WhatsApp and Instagram. Buyers pay without messaging you.</p></li>
+    <li><h3>Confirmed payments only</h3><p class="muted">A ticket is issued only after the payment is confirmed, so fake screenshots do not work.</p></li>
+    <li><h3>Scan at the gate</h3><p class="muted">Every QR ticket works once, so the same ticket cannot be used twice.</p></li>
+    <li><h3>Simple pricing</h3><p class="muted">Slotz adds a small service fee per ticket at checkout. Organizers pay nothing upfront.</p></li>
+  </ul>
+</div></section>
+
+<section id="payments"><div class="wrap">
+  <h2>Secure payments</h2>
+  <p>Payments on Slotz are processed by Paystack. Slotz does not see or store your card details.</p>
+</div></section>
+
+<section id="terms"><div class="wrap">
+  <h2>Terms and refunds</h2>
+  <div class="doc">
+    <h3>Tickets</h3><p>Each QR ticket admits the number of people shown on it and can be scanned once. Keep your ticket private, because anyone who scans it first gets in.</p>
+    <h3>Refunds</h3><p>Tickets are not refundable once bought, unless the event is cancelled or the organizer agrees to a refund. If an event is cancelled, buyers are refunded the ticket price. The service fee may be non-refundable.</p>
+    <h3>Problems with a payment</h3><p>If you were charged but did not get a ticket, contact us with your payment reference and we will fix it.</p>
+    <h3>Privacy</h3><p>We collect your name and email only to issue your ticket and handle support. We do not sell your information.</p>
+  </div>
+</div></section>
+
+<section id="contact" class="band"><div class="wrap">
+  <h2>Contact</h2>
+  <p>Want to sell tickets for your event, or need help with a ticket? Reach us here.</p>
+  <p>Email: <a href="mailto:YOUR_EMAIL@example.com">YOUR_EMAIL@example.com</a><br>
+  WhatsApp: <a href="https://wa.me/234XXXXXXXXXX">+234 XXX XXX XXXX</a><br>
+  Instagram: <a href="https://instagram.com/YOUR_HANDLE">@YOUR_HANDLE</a></p>
+</div></section>
+</main>
+
+<footer><div class="wrap">© 2026 Slotz. Online ticketing for campus shows in Nigeria.</div></footer>
+</body>
+</html>
