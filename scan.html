@@ -66,7 +66,7 @@ function loadStats(){
    .then(function(r){return r.json()}).then(function(d){
      if(d.result==="denied"){$("cnt").hidden=true;say("bad","Wrong gate key","<p>Check the key and try again.</p>")}
      else if(d.result==="stats"){counts(d.stats);say("","Ready","<p>"+esc(d.gate)+" · "+(d.scope==="ALL"?"all events":esc(d.scope))+"</p>")}
-     else if(d.ok===false){if(/unknown request/i.test(String(d.error))){say("bad","Server is on an old version","<p>The ticket server has not been updated yet. In Apps Script choose Deploy, Manage deployments, edit, New version, then Deploy.</p>")}else{say("bad","Server problem","<p>"+esc(String(d.error||"Unknown error"))+" Check Executions in Apps Script for the error.</p>")}}
+     else if(d.ok===false){if(/unknown request/i.test(String(d.error))){say("bad","Wrong Gate key","<p>Input the right gate key or seek for technical support/help Email:getslotzng@gmail.com.</p>")}else{say("bad","Wrong Gate Key","<p>"+esc(String(d.error||"Unknown error"))+" Check gate key.</p>")}}
    }).catch(function(){})}
 function check(raw){
   if(!ok){say("bad","Not connected","<p>The scanner is not linked to the ticket server yet.</p>");return}
