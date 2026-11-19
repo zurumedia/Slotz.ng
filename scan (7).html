@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Slotz gate scanner</title>
+<style>
+:root{--bg:#F6F4FF;--card:#fff;--text:#14122B;--muted:#5d5a78;--brand:#6C3CF0;--cta:#C6F432;--ink:#14122B;--hot:#FF5C6C;--line:#dcd7f5;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#14122B;--card:#1f1c3d;--text:#F6F4FF;--muted:#b4b0d6;--line:#352f66;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.45}
+main{max-width:480px;margin:0 auto;padding:18px 18px 40px}
+.logo{font-weight:800;font-size:26px;letter-spacing:-.03em;color:var(--brand);margin:0 0 12px}.logo b{color:var(--hot)}
+label{display:block;font-size:14px;color:var(--muted);margin:12px 0 4px}
+input{width:100%;font:inherit;font-size:16px;color:var(--text);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:12px 14px}
+input:focus,button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+button{font-family:inherit;font-weight:800;font-size:18px;border:0;border-radius:16px;padding:15px;cursor:pointer;width:100%;margin-top:12px}
+.go{background:var(--cta);color:var(--ink)}
+.alt{background:none;color:var(--text);border:2px solid var(--text);font-size:16px;font-weight:700;padding:12px}
+video{width:100%;border-radius:16px;margin-top:14px;background:#000}
+.res{margin-top:14px;padding:20px 18px;border-radius:18px;background:var(--card);border:2px solid var(--line);text-align:center}
+.res h2{margin:0;font-size:30px;letter-spacing:-.02em}
+.res .no{font-size:22px;font-weight:800;letter-spacing:.06em;margin:6px 0 10px}
+.res dl{margin:12px 0 0;text-align:left;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:17px}
+.res dt{opacity:.8}.res dd{margin:0;font-weight:700;overflow-wrap:anywhere;text-align:right}
+.res.ok{background:var(--cta);color:var(--ink);border-color:var(--cta)}
+.res.bad{background:var(--hot);color:#14122B;border-color:var(--hot)}
+.res p{margin:8px 0 0;font-size:17px}
+.cnt{margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--card);border:2px solid var(--line);font-size:16px}.cnt b{display:block}.cnt div+div{margin-top:8px}.cnt span{font-weight:800;font-size:20px}
+.res.warn{background:#FFC815;color:#14122B;border-color:#FFC815}
+[hidden]{display:none!important}
+</style>
+<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+</head>
+<body>
+<main>
+<p class="logo">Slotz<b>.</b> gate</p>
+<label for="key">Gate key</label><input id="key" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+<button class="go" id="go">Start scanning</button>
+<div class="cnt" id="cnt" hidden></div>
+<video id="v" playsinline muted hidden></video><canvas id="c" hidden></canvas>
+<div class="res" id="res" role="status" aria-live="polite"><h2>Ready</h2><p>Enter the gate key and start scanning.</p></div>
+<label for="man">Camera not working? Type the ticket number</label>
+<input id="man" autocapitalize="characters" placeholder="SLZ-XXXXXX">
+<button class="alt" id="chk">Check ticket number</button>
+</main>
+<script>
+(function(){
+var API=window.SLOTZ_API||"",ok=/^https:\/\/script\.google\.com\//.test(API),busy=false,last="";
+var $=function(i){return document.getElementById(i)};
+try{$("key").value=sessionStorage.getItem("slotz-key")||""}catch(e){}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function say(cls,head,body){var r=$("res");r.className="res "+cls;r.innerHTML="<h2>"+head+"</h2>"+(body||"")}
+function details(d){
+  return '<div class="no">'+esc(d.no)+'</div><dl><dt>Name</dt><dd>'+esc(d.name)+'</dd><dt>Phone</dt><dd>'+esc(d.phone)+'</dd><dt>Email</dt><dd>'+esc(d.email)+'</dd><dt>Event</dt><dd>'+esc(d.event)+'</dd><dt>Ticket</dt><dd>'+esc(d.type)+'</dd><dt>Admits</dt><dd>'+esc(d.admits)+'</dd><dt>Paid</dt><dd>₦'+Number(d.amount).toLocaleString("en-NG")+'</dd></dl>';
+}
+function counts(list){
+  var c=$("cnt");if(!list||!list.length){return}
+  c.innerHTML=list.map(function(x){return"<div><b>"+esc(x.event)+"</b><span>"+x.inPeople+"</span> of "+x.soldPeople+" people checked in</div>"}).join("");c.hidden=false}
+function loadStats(){
+  if(!ok||!$("key").value.trim())return;
+  fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"stats",key:$("key").value})})
+   .then(function(r){return r.json()}).then(function(d){
+     if(d.result==="denied"){$("cnt").hidden=true;say("bad","Wrong gate key","<p>Check the key and try again.</p>")}
+     else if(d.result==="stats"){counts(d.stats);say("","Ready","<p>"+esc(d.gate)+" · "+(d.scope==="ALL"?"all events":esc(d.scope))+"</p>")}
+     else if(d.ok===false){say("bad","Could not connect","<p>Check the connection and try again.</p>")}
+   }).catch(function(){})}
+function needKey(){say("bad","Enter the gate key","<p>Type the gate key above to start scanning.</p>")}
+function check(raw){
+  if(!ok){say("bad","Not connected","<p>The scanner could not connect. Try again later.</p>");return}
+  if(!$("key").value.trim()){needKey();return}
+  var code=String(raw).trim().replace(/^SLOTZ:/i,"");
+  busy=true;say("","Checking…");
+  try{sessionStorage.setItem("slotz-key",$("key").value)}catch(e){}
+  fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"scan",code:code,key:$("key").value})})
+   .then(function(r){return r.json()}).then(function(d){
+     if(d.result==="valid"){say("ok","VERIFIED TICKET",details(d.ticket));counts(d.stats)}
+     else if(d.result==="used"){say("bad","ALREADY USED",'<p>Scanned at '+esc(d.at)+'</p>'+details(d.ticket));counts(d.stats)}
+     else if(d.result==="wrongevent"){say("warn","WRONG EVENT","<p>This ticket is for <b>"+esc(d.event)+"</b>. This gate is set up for <b>"+esc(d.gateEvent)+"</b>. Do not admit here.</p>")}
+     else if(d.result==="cancelled"){say("bad","TICKET "+esc(d.status),"<p>This ticket was "+esc(String(d.status).toLowerCase())+". Do not admit.</p>")}
+     else if(d.result==="denied"){say("bad","Wrong gate key","<p>Check the key and try again.</p>")}
+     else if(d.result==="invalid"){say("bad","INVALID TICKET","<p>This is not a paid Slotz ticket.</p>")}
+     else{say("bad","Could not check this ticket","<p>Please try again.</p>")}
+     if(navigator.vibrate)navigator.vibrate(d.result==="valid"?80:[120,60,120]);
+   }).catch(function(){say("bad","No network","<p>Check the connection and scan again.</p>")})
+   .then(function(){setTimeout(function(){busy=false;last=""},2500)});
+}
+$("chk").onclick=function(){var c=$("man").value.trim();if(c&&!busy)check(c)};
+$("key").onchange=loadStats;
+try{if($("key").value)loadStats()}catch(e){}
+$("go").onclick=function(){if(!$("key").value.trim()){needKey();return}loadStats();
+  try{sessionStorage.setItem("slotz-key",$("key").value)}catch(e){}
+  navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}}).then(function(s){
+    var v=$("v");v.srcObject=s;v.hidden=false;v.play();$("go").hidden=true;say("","Point at a ticket QR");loop();
+  }).catch(function(){say("bad","Camera blocked","<p>Allow camera access, or type the ticket number below.</p>")});
+};
+var det=null;
+try{if("BarcodeDetector" in window)det=new BarcodeDetector({formats:["qr_code"]})}catch(e){det=null}
+function got(t){if(t&&t!==last){last=t;check(t)}}
+function loop(){
+  var v=$("v");
+  if(!busy&&v.readyState>=2&&v.videoWidth){
+    if(det){
+      det.detect(v).then(function(r){if(r&&r.length)got(r[0].rawValue);else jq(v)}).catch(function(){jq(v)});
+    }else jq(v);
+  }
+  setTimeout(function(){requestAnimationFrame(loop)},det?120:60);
+}
+function jq(v){
+  if(busy||typeof jsQR!=="function")return;
+  var c=$("c"),w=Math.min(960,v.videoWidth),h=Math.round(w*v.videoHeight/v.videoWidth);c.width=w;c.height=h;
+  var x=c.getContext("2d",{willReadFrequently:true});x.drawImage(v,0,0,w,h);
+  var q=jsQR(x.getImageData(0,0,w,h).data,w,h,{inversionAttempts:"attemptBoth"});
+  if(q&&q.data)got(q.data);
+}
+})();
+</script>
+</body>
+</html>
